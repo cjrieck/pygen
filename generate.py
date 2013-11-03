@@ -5,6 +5,8 @@ import argparse
 def main():
 	parser = argparse.ArgumentParser()
 	parser.add_argument('file', help='name of the file you want to create')
+	parser.add_argument('-i', '--import', nargs='+', help='modules you want to import')
+	parser.add_argument('-c', '--classes', nargs='+', help='names of classes you want to create')
 	parser.add_argument('-f', '--functions', nargs='+', help='names of functions you want to create')
 
 
