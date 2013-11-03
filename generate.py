@@ -15,44 +15,48 @@ def main():
 		fileName = open(args.file+'.py', 'w')
 		# fileName.close()
 
-	if args.functions:
+		if args.functions:
 
-		for function in args.functions:
+			for function in args.functions:
 
-			argumentString = raw_input("Enter argument(s) for "+function+': ')
+				argumentString = raw_input("Enter argument(s) for "+function+': ')
 
-			if argumentString == '':
-				argumentList = []
-			elif argumentString.find(',') != -1:
-				argumentList = argumentString.split(',')
-				print argumentList
-			else:
-				argumentList = argumentString.split(' ')
-			# argumentList = str(tuple(argumentList))
-			argumentString = ','.join(argumentList)
+				if argumentString == '':
+					argumentList = []
+				elif argumentString.find(',') != -1:
+					argumentList = argumentString.split(',')
+					# print argumentList
+				else:
+					argumentList = argumentString.split(' ')
+				# argumentList = str(tuple(argumentList))
+				argumentString = ','.join(argumentList)
 
-			fileName.write('def '+function+'('+argumentString+')'+':')
+				fileName.write('def '+function+'('+argumentString+')'+':')
 
-			returnString = raw_input("Enter return value(s) for "+function+': ')
-			
-			if returnString == '':
-				returnValueList = []
-			elif returnString.find(',') != -1:
-				returnValueList = returnString.split(',')
-			else:
-				returnValueList = returnString.split(' ')
-			
-			if returnValueList == []:
-				fileName.write('\n\tpass # remove this and replace with the function body')
-			else:
-				returnString = ','.join(returnValueList)
-				fileName.write('\n\treturn '+returnString)
+				returnString = raw_input("Enter return value(s) for "+function+': ')
+				
+				if returnString == '':
+					returnValueList = []
+				elif returnString.find(',') != -1:
+					returnValueList = returnString.split(',')
+				else:
+					returnValueList = returnString.split(' ')
+				
+				if returnValueList == []:
+					fileName.write('\n\tpass # remove this and replace with the function body')
+				else:
+					returnString = ','.join(returnValueList)
+					fileName.write('\n\treturn '+returnString)
 
-			fileName.write('\n\n')
+				fileName.write('\n\n')
 
-		fileName.write("def main():\n\tpass")
-		fileName.write("\n\nif __name__ == '__main__':\n\tmain()")
-
+			fileName.write("def main():\n\tpass")
+			fileName.write("\n\nif __name__ == '__main__':\n\tmain()")
+		
+		else:
+			fileName.write("def main():\n\tpass")
+			fileName.write("\n\nif __name__ == '__main__':\n\tmain()")
+		
 		fileName.close()
 
 if __name__ == '__main__':
