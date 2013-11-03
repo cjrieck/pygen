@@ -15,4 +15,4 @@ sudo ln -s /Path/to/Python-Boilerplate-Generator/generate.py /usr/local/bin/pyge
 chmod +x /usr/local/bin/pygen
 ```
 
-In the command line type ``` console pygen --help ``` for more info
+In the command line type ``` pygen --help ``` for more info
