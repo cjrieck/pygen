@@ -6,13 +6,10 @@ def check_input(inputString):
 	if inputString == '':
 		inputList = []
 		
-	# elif inputString.find(',') != -1:
-	# 	inputList = inputString.split(',')
-	# else:
-	# 	inputList = inputString.split(' ')
-
-	inputString = inputString.replace(',', ' ')
-	inputList = inputString.split(' ')
+	elif inputString.find(',') != -1:
+		inputList = inputString.split(',')
+	else:
+		inputList = inputString.split(' ')
 
 	return inputList
 
