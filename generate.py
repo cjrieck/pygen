@@ -13,8 +13,7 @@ def check_input(inputString):
 
 	return inputList
 
-
-def create_functions(fileName, function, delimiter=''):
+def create_functions(fileName, function, delimiter='', classMethod=False):
 
 	argumentString = raw_input("Enter argument(s) for "+function+': ')
 
@@ -22,6 +21,12 @@ def create_functions(fileName, function, delimiter=''):
 
 	argumentString = ','.join(argumentList)
 	
+	if classMethod == True:
+		if argumentList == []:
+			argumentString = 'self'
+		else:
+			argumentString = 'self,'+argumentString
+
 	fileName.write('def '+function+'('+argumentString+')'+':')
 
 	returnString = raw_input("Enter return value(s) for "+function+': ')
@@ -29,7 +34,7 @@ def create_functions(fileName, function, delimiter=''):
 	returnValueList = check_input(returnString)
 
 	if returnValueList == []:
-		fileName.write('\n\tpass # remove this and replace with the function body')
+		fileName.write('\n\t'+delimiter+'pass # remove this and replace with the function body')
 	else:
 		returnString = ','.join(returnValueList)
 		fileName.write('\n\t'+delimiter+'return '+returnString)
@@ -63,7 +68,7 @@ def main():
 
 				dataList = check_input(dataString)
 
-				argumentDataList = []
+				argumentDataList = ['self']
 
 				for arg in dataList:
 					newArg = arg+'=None'
@@ -73,7 +78,8 @@ def main():
 				dataString = ','.join(argumentDataList)
 				fileName.write('\n\tdef __init__('+dataString+'):')
 
-				for arg in argumentDataList:
+				for arg in argumentDataList[1:]:
+					
 					fileName.write('\n\t\tself.'+arg.replace(' ', '').replace('=None', '')+' = '+arg.replace('=None', '').replace(' ', ''))
 
 				fileName.write('\n\n')
@@ -86,7 +92,7 @@ def main():
 
 				for method in methodList:
 					fileName.write('\t')
-					create_functions(fileName, method, '\t')
+					create_functions(fileName, method, '\t', True)
 
 
 		if args.functions:
