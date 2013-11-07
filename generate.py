@@ -1,12 +1,6 @@
 #!/usr/bin/env python
 
 import argparse
-import pkgutil
-
-# MODULES_INSTALLED = []
-
-# for importer, modname, ispkg in pkgutil.walk_packages(path=None, onerror=lambda x: None):
-# 	MODULES_INSTALLED.append(modname)
 
 def check_input(inputString):
 
@@ -48,11 +42,21 @@ def create_functions(fileName, function, delimiter='', classMethod=False):
 
 	fileName.write('\n\n')
 
-# def check_package(package):
-# 	try:
-# 		return __import__(package)
-# 	except ImportError:
-# 		return None
+def check_package(package):
+	try:
+		import package
+		return True
+	except ImportError:
+		return False
+
+def install_package(package):
+	from subprocess import Popen, PIPE, STDOUT
+	command = 'pip install '+package
+	event = Popen(command, shell=True, stdin=PIPE, stdout=PIPE, stderr=STDOUT)
+	output = event.communicate()
+	print output[0]
+
+
 
 def main():
 	parser = argparse.ArgumentParser()
@@ -72,14 +76,33 @@ def main():
 		if args.imports:
 			
 			# check for modules and install dependencies if necessary
-			#-----------------------------------------------------------
-			# print MODULES_INSTALLED[0]
-			#-----------------------------------------------------------
 
 			for module in args.imports:
-				# package = module
 
-				fileName.write('import '+module+'\n')
+				moduleExists = check_package(module)
+
+				if moduleExists:
+					fileName.write('import '+module+'\n')
+
+				else:
+					pipExists = check_package('pip')
+					
+					if pipExists:
+						install_package(module)
+						fileName.write('import '+module+'\n')
+
+					else:
+						# install pip first
+						from subprocess import Popen, PIPE, STDOUT
+						command = 'easy_install pip'
+						event = Popen(command, shell=True, stdin=PIPE, stdout=PIPE, stderr=STDOUT)
+						output = event.communicate()
+						print output[0]
+
+						install_package(module)
+
+						fileName.write('import '+module+'\n')
+
 
 			fileName.write('\n')
 
