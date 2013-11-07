@@ -1,5 +1,12 @@
 #!/usr/bin/env python
+
 import argparse
+import pkgutil
+
+# MODULES_INSTALLED = []
+
+# for importer, modname, ispkg in pkgutil.walk_packages(path=None, onerror=lambda x: None):
+# 	MODULES_INSTALLED.append(modname)
 
 def check_input(inputString):
 
@@ -41,6 +48,12 @@ def create_functions(fileName, function, delimiter='', classMethod=False):
 
 	fileName.write('\n\n')
 
+# def check_package(package):
+# 	try:
+# 		return __import__(package)
+# 	except ImportError:
+# 		return None
+
 def main():
 	parser = argparse.ArgumentParser()
 	parser.add_argument('file', help='name of the file you want to create')
@@ -57,7 +70,18 @@ def main():
 		# fileName.close()
 
 		if args.imports:
-			pass
+			
+			# check for modules and install dependencies if necessary
+			#-----------------------------------------------------------
+			# print MODULES_INSTALLED[0]
+			#-----------------------------------------------------------
+
+			for module in args.imports:
+				# package = module
+
+				fileName.write('import '+module+'\n')
+
+			fileName.write('\n')
 
 		if args.classes:
 
