@@ -92,9 +92,8 @@ def install_package(package):
 
 	# print output
 
-	print WARNING+'Download/Install Error: '+ENDC+messageString[beginMessage:endMessage]
-
 	if output[0].find("Could not find") != -1:
+		print WARNING+'Download/Install Error: '+ENDC+messageString[beginMessage:endMessage]
 		return False
 	else:
 		return True
@@ -113,7 +112,22 @@ def main():
 	fileName = ""
 
 	if args.file:
-		fileName = open(args.file+'.py', 'w')
+		
+		if os.path.exists('./'+args.file+'.py'):
+
+			# Allow User to overwrite file that already exists
+			# -----------------------------------------------------
+			print WARNING+BOLD+'Warning!'+ENDC+' About to overwrite '+BLUE+args.file+ENDC
+			response = raw_input(CYAN+'Would you like to continue?'+ENDC+'[y/n] ')
+			if response.lower() == 'n':
+				sys.exit()
+			else:
+				# os.remove(args.file+'.py')
+				fileName = open(args.file+'.py', 'w')
+			# -----------------------------------------------------
+		else:
+			print 'Creating new file, '+BLUE+BOLD+fileName
+			fileName = open(args.file+'.py', 'w')
 
 		if args.imports:
 			
