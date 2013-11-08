@@ -26,7 +26,12 @@ FUNCTION = GREY+BOLD
 ENDC = '\033[0m'
 
 def check_input(inputString):
-
+	"""
+	Arguments: String of arguments from Terminal
+	Purpose:
+		Split string into a list for easier iteration
+	Return: List of arguments as string
+	"""
 	if inputString == '':
 		inputList = []
 		
@@ -80,9 +85,9 @@ def install_package(package):
 
 	messageString = output[0]
 	beginMessage = messageString.find('Could')
-	print beginMessage
+	# print beginMessage
 	endMessage = messageString[beginMessage:].find(package)+len(package)+beginMessage
-	print endMessage
+	# print endMessage
 	
 
 	# print output
@@ -103,13 +108,12 @@ def main():
 	parser.add_argument('-c', '--classes', nargs='+', help='names of classes you want to create')
 	parser.add_argument('-f', '--functions', nargs='+', help='names of functions you want to create')
 
-
 	args = parser.parse_args()
 
 	fileName = ""
+
 	if args.file:
 		fileName = open(args.file+'.py', 'w')
-		# fileName.close()
 
 		if args.imports:
 			
@@ -184,8 +188,6 @@ def main():
 				fileName.write('\n\n')
 
 				methodString = raw_input('Enter the methods of class, '+BLUE+BOLD+className+ENDC+': ')
-
-				# write methods to the class body
 
 				methodList = check_input(methodString)
 
