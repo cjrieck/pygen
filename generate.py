@@ -1,6 +1,29 @@
 #!/usr/bin/env python
 
 import argparse
+import os
+import sys
+
+"""
+Color codes:
+"""
+RED = '\033[91m'
+GREEN = '\033[92m'
+BLUE = '\033[94m'
+CYAN = '\033[96m'
+WHITE = '\033[97m'
+YELLOW = '\033[93m'
+MAGENTA = '\033[95m'
+GREY = '\033[90m'
+BLACK = '\033[90m'
+DEFAULT = '\033[99m'
+
+BOLD = '\033[1m'
+
+WARNING = RED
+MODULE = BLUE+BOLD
+FUNCTION = GREY+BOLD
+ENDC = '\033[0m'
 
 def check_input(inputString):
 
@@ -16,7 +39,7 @@ def check_input(inputString):
 
 def create_functions(fileName, function, delimiter='', classMethod=False):
 
-	argumentString = raw_input("Enter argument(s) for "+function+': ')
+	argumentString = raw_input("Enter argument(s) for "+FUNCTION+function+ENDC+': ')
 
 	argumentList = check_input(argumentString)
 
@@ -30,7 +53,7 @@ def create_functions(fileName, function, delimiter='', classMethod=False):
 
 	fileName.write('def '+function+'('+argumentString+')'+':')
 
-	returnString = raw_input("Enter return value(s) for "+function+': ')
+	returnString = raw_input("Enter return value(s) for "+FUNCTION+function+ENDC+': ')
 	
 	returnValueList = check_input(returnString)
 
@@ -44,7 +67,7 @@ def create_functions(fileName, function, delimiter='', classMethod=False):
 
 def check_package(package):
 	try:
-		import package
+		__import__(package)
 		return True
 	except ImportError:
 		return False
@@ -54,7 +77,22 @@ def install_package(package):
 	command = 'pip install '+package
 	event = Popen(command, shell=True, stdin=PIPE, stdout=PIPE, stderr=STDOUT)
 	output = event.communicate()
-	print output[0]
+
+	messageString = output[0]
+	beginMessage = messageString.find('Could')
+	print beginMessage
+	endMessage = messageString[beginMessage:].find(package)+len(package)+beginMessage
+	print endMessage
+	
+
+	# print output
+
+	print WARNING+'Download/Install Error: '+ENDC+messageString[beginMessage:endMessage]
+
+	if output[0].find("Could not find") != -1:
+		return False
+	else:
+		return True
 
 
 
@@ -77,20 +115,34 @@ def main():
 			
 			# check for modules and install dependencies if necessary
 
+			if os.getuid() != 0: # check for root user
+				print WARNING+BOLD+'Warning: Not root user!'+ENDC+' Some dependencies may not install.'
+				response = raw_input(CYAN+'Continue?'+ENDC+'[y/n]: ')
+				
+				if response.lower() == 'n':
+					sys.exit()
+
+
 			for module in args.imports:
 
 				moduleExists = check_package(module)
+				
 
 				if moduleExists:
+					print 'Imported '+MODULE+module+ENDC
 					fileName.write('import '+module+'\n')
 
 				else:
 					pipExists = check_package('pip')
 					
 					if pipExists:
-						install_package(module)
-						fileName.write('import '+module+'\n')
-
+						couldInstall = install_package(module)
+						
+						if couldInstall:
+							fileName.write('import '+module+'\n')
+						else:
+							print WARNING+'ERROR:'+ENDC+' Module, '+MODULE+module+ENDC+', does not exist or could not be downloaded/installed. Did not write to file'
+					
 					else:
 						# install pip first
 						from subprocess import Popen, PIPE, STDOUT
@@ -111,7 +163,7 @@ def main():
 			for className in args.classes:
 				fileName.write('class '+className+':')
 
-				dataString = raw_input('Enter data to be stored in the class, '+className+': ')
+				dataString = raw_input('Enter data to be stored in the class, '+BLUE+BOLD+className+ENDC+': ')
 
 				dataList = check_input(dataString)
 
@@ -131,7 +183,7 @@ def main():
 
 				fileName.write('\n\n')
 
-				methodString = raw_input('Enter the methods of class, '+className+': ')
+				methodString = raw_input('Enter the methods of class, '+BLUE+BOLD+className+ENDC+': ')
 
 				# write methods to the class body
 
