@@ -72,8 +72,19 @@ def create_functions(fileName, function, delimiter='', classMethod=False):
 	if returnValueList == []:
 		fileName.write('\n\t'+delimiter+'pass # remove this and replace with the function body')
 	else:
-		returnString = ','.join(returnValueList)
-		fileName.write('\n\t'+delimiter+'return '+returnString)
+		
+		if not classMethod:
+			returnString = ','.join(returnValueList)
+			fileName.write('\n\t'+delimiter+'return '+returnString)
+		else:
+			classReturnValueList = []
+			
+			for value in returnValueList:
+				value = 'self.'+value.replace(' ','')
+				classReturnValueList.append(value)
+			
+			returnString = ','.join(classReturnValueList)
+			fileName.write('\n\t'+delimiter+'return '+returnString)
 
 	fileName.write('\n\n')
 
@@ -117,8 +128,6 @@ def install_package(package):
 	else:
 		return True
 
-
-
 def main():
 	parser = argparse.ArgumentParser()
 	parser.add_argument('file', help='name of the file you want to create')
@@ -132,21 +141,23 @@ def main():
 
 	if args.file:
 		
-		if os.path.exists('./'+args.file+'.py'):
+		# if os.path.exists('./'+args.file+'.py'):
 
-			# Allow User to overwrite file that already exists
-			# -----------------------------------------------------
-			print WARNING+BOLD+'Warning!'+ENDC+' About to overwrite '+BLUE+args.file+ENDC
-			response = raw_input(CYAN+'Would you like to continue?'+ENDC+'[y/n] ')
-			if response.lower() == 'n':
-				sys.exit()
-			else:
-				# os.remove(args.file+'.py')
-				fileName = open(args.file+'.py', 'w')
-			# -----------------------------------------------------
-		else:
-			print 'Creating new file, '+BLUE+BOLD+fileName
-			fileName = open(args.file+'.py', 'w')
+		# 	# Allow User to overwrite file that already exists
+		# 	# -----------------------------------------------------
+		# 	print WARNING+BOLD+'Warning!'+ENDC+' About to overwrite '+BLUE+args.file+ENDC
+		# 	response = raw_input(CYAN+'Would you like to continue?'+ENDC+'[y/n] ')
+		# 	if response.lower() == 'n':
+		# 		sys.exit()
+		# 	else:
+		# 		# os.remove(args.file+'.py')
+		# 		fileName = open(args.file+'.py', 'w')
+		# 	# -----------------------------------------------------
+		# else:
+		# 	print 'Creating new file, '+BLUE+BOLD+fileName
+		# 	fileName = open(args.file+'.py', 'w')
+
+		fileName = open(args.file+'.py', 'w')
 
 		if args.imports:
 			
