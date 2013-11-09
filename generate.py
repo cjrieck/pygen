@@ -43,6 +43,13 @@ def check_input(inputString):
 	return inputList
 
 def create_functions(fileName, function, delimiter='', classMethod=False):
+	"""
+	Arguments: file to write to, function to write, add extra delimeter if class method, boolean for class method or not
+	Purpose:
+		writes the functions/method to the file
+		will add arguments and return values to functions/methods
+	Return: N/A
+	"""
 
 	argumentString = raw_input("Enter argument(s) for "+FUNCTION+function+ENDC+': ')
 
@@ -71,6 +78,12 @@ def create_functions(fileName, function, delimiter='', classMethod=False):
 	fileName.write('\n\n')
 
 def check_package(package):
+	"""
+	Argument: Package to import
+	Purpose:
+		check if package can be Imported
+	Return: True or False depending on if module could be imported or not
+	"""
 	try:
 		__import__(package)
 		return True
@@ -78,6 +91,12 @@ def check_package(package):
 		return False
 
 def install_package(package):
+	"""
+	Argument: Package to install
+	Purpose:
+		Installs packages/modules if User doesn't have it installed already
+	Return: True or False depending on if package installed or not
+	"""
 	from subprocess import Popen, PIPE, STDOUT
 	command = 'pip install '+package
 	event = Popen(command, shell=True, stdin=PIPE, stdout=PIPE, stderr=STDOUT)
