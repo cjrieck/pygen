@@ -130,128 +130,139 @@ def install_package(package):
 
 def main():
 	parser = argparse.ArgumentParser()
-	parser.add_argument('file', help='name of the file you want to create')
+	parser.add_argument('file', default='pygenFile',help='name of the file you want to create')
 	parser.add_argument('-i', '--imports', nargs='+', help='modules you want to import')
 	parser.add_argument('-c', '--classes', nargs='+', help='names of classes you want to create')
 	parser.add_argument('-f', '--functions', nargs='+', help='names of functions you want to create')
+	parser.add_argument('-fw', '--framework', nargs='?', help='name of python framework')
 
 	args = parser.parse_args()
 
 	fileName = ""
 
-	if args.file:
-		
-		# if os.path.exists('./'+args.file+'.py'):
+	# begin implementing Framework app files generation
+	if args.framework:
 
-		# 	# Allow User to overwrite file that already exists
-		# 	# -----------------------------------------------------
-		# 	print WARNING+BOLD+'Warning!'+ENDC+' About to overwrite '+BLUE+args.file+ENDC
-		# 	response = raw_input(CYAN+'Would you like to continue?'+ENDC+'[y/n] ')
-		# 	if response.lower() == 'n':
-		# 		sys.exit()
-		# 	else:
-		# 		# os.remove(args.file+'.py')
-		# 		fileName = open(args.file+'.py', 'w')
-		# 	# -----------------------------------------------------
-		# else:
-		# 	print 'Creating new file, '+BLUE+BOLD+fileName
-		# 	fileName = open(args.file+'.py', 'w')
+		if check_package(args.framework):
+			execfile(args.framework+'Generate.py')
+		else:
+			install_package(args.framework)
+			execfile(args.framework+'Generate.py')
 
-		fileName = open(args.file+'.py', 'w')
-
-		if args.imports:
+	else:
+		if args.file:
 			
-			# check for modules and install dependencies if necessary
+			# if os.path.exists('./'+args.file+'.py'):
 
-			if os.getuid() != 0: # check for root user
-				print WARNING+BOLD+'Warning: Not root user!'+ENDC+' Some dependencies may not install.'
-				response = raw_input(CYAN+'Continue?'+ENDC+'[y/n]: ')
+			# 	# Allow User to overwrite file that already exists
+			# 	# -----------------------------------------------------
+			# 	print WARNING+BOLD+'Warning!'+ENDC+' About to overwrite '+BLUE+args.file+ENDC
+			# 	response = raw_input(CYAN+'Would you like to continue?'+ENDC+'[y/n] ')
+			# 	if response.lower() == 'n':
+			# 		sys.exit()
+			# 	else:
+			# 		# os.remove(args.file+'.py')
+			# 		fileName = open(args.file+'.py', 'w')
+			# 	# -----------------------------------------------------
+			# else:
+			# 	print 'Creating new file, '+BLUE+BOLD+fileName
+			# 	fileName = open(args.file+'.py', 'w')
+
+			fileName = open(args.file+'.py', 'w')
+
+			if args.imports:
 				
-				if response.lower() == 'n':
-					sys.exit()
+				# check for modules and install dependencies if necessary
 
-
-			for module in args.imports:
-
-				moduleExists = check_package(module)
-				
-
-				if moduleExists:
-					print 'Imported '+MODULE+module+ENDC
-					fileName.write('import '+module+'\n')
-
-				else:
-					pipExists = check_package('pip')
+				if os.getuid() != 0: # check for root user
+					print WARNING+BOLD+'Warning: Not root user!'+ENDC+' Some dependencies may not install.'
+					response = raw_input(CYAN+'Continue?'+ENDC+'[y/n]: ')
 					
-					if pipExists:
-						couldInstall = install_package(module)
-						
-						if couldInstall:
-							fileName.write('import '+module+'\n')
-						else:
-							print WARNING+'ERROR:'+ENDC+' Module, '+MODULE+module+ENDC+', does not exist or could not be downloaded/installed. Did not write to file'
+					if response.lower() == 'n':
+						sys.exit()
+
+
+				for module in args.imports:
+
+					moduleExists = check_package(module)
 					
-					else:
-						# install pip first
-						from subprocess import Popen, PIPE, STDOUT
-						command = 'easy_install pip'
-						event = Popen(command, shell=True, stdin=PIPE, stdout=PIPE, stderr=STDOUT)
-						output = event.communicate()
-						print output[0]
 
-						install_package(module)
-
+					if moduleExists:
+						print 'Imported '+MODULE+module+ENDC
 						fileName.write('import '+module+'\n')
 
+					else:
+						pipExists = check_package('pip')
+						
+						if pipExists:
+							couldInstall = install_package(module)
+							
+							if couldInstall:
+								fileName.write('import '+module+'\n')
+							else:
+								print WARNING+'ERROR:'+ENDC+' Module, '+MODULE+module+ENDC+', does not exist or could not be downloaded/installed. Did not write to file'
+						
+						else:
+							# install pip first
+							from subprocess import Popen, PIPE, STDOUT
+							command = 'easy_install pip'
+							event = Popen(command, shell=True, stdin=PIPE, stdout=PIPE, stderr=STDOUT)
+							output = event.communicate()
+							print output[0]
 
-			fileName.write('\n')
+							install_package(module)
 
-		if args.classes:
-
-			for className in args.classes:
-				fileName.write('class '+className+':')
-
-				dataString = raw_input('Enter data to be stored in the class, '+BLUE+BOLD+className+ENDC+': ')
-
-				dataList = check_input(dataString)
-
-				argumentDataList = ['self']
-
-				for arg in dataList:
-					newArg = arg+'=None'
-					argumentDataList.append(newArg)
-					
-
-				dataString = ','.join(argumentDataList)
-				fileName.write('\n\tdef __init__('+dataString+'):')
-
-				for arg in argumentDataList[1:]:
-					
-					fileName.write('\n\t\tself.'+arg.replace(' ', '').replace('=None', '')+' = '+arg.replace('=None', '').replace(' ', ''))
-
-				fileName.write('\n\n')
-
-				methodString = raw_input('Enter the methods of class, '+BLUE+BOLD+className+ENDC+': ')
-
-				methodList = check_input(methodString)
-
-				for method in methodList:
-					fileName.write('\t')
-					create_functions(fileName, method, '\t', True)
+							fileName.write('import '+module+'\n')
 
 
-		if args.functions:
+				fileName.write('\n')
 
-			for function in args.functions:
+			if args.classes:
 
-				create_functions(fileName, function)
+				for className in args.classes:
+					fileName.write('class '+className+':')
 
-			fileName.write("def main():\n\tpass")
-			fileName.write("\n\nif __name__ == '__main__':\n\tmain()")
-		
-		else:
-			fileName.write("def main():\n\tpass")
-			fileName.write("\n\nif __name__ == '__main__':\n\tmain()")
+					dataString = raw_input('Enter data to be stored in the class, '+BLUE+BOLD+className+ENDC+': ')
+
+					dataList = check_input(dataString)
+
+					argumentDataList = ['self']
+
+					for arg in dataList:
+						newArg = arg+'=None'
+						argumentDataList.append(newArg)
+						
+
+					dataString = ','.join(argumentDataList)
+					fileName.write('\n\tdef __init__('+dataString+'):')
+
+					for arg in argumentDataList[1:]:
+						
+						fileName.write('\n\t\tself.'+arg.replace(' ', '').replace('=None', '')+' = '+arg.replace('=None', '').replace(' ', ''))
+
+					fileName.write('\n\n')
+
+					methodString = raw_input('Enter the methods of class, '+BLUE+BOLD+className+ENDC+': ')
+
+					methodList = check_input(methodString)
+
+					for method in methodList:
+						fileName.write('\t')
+						create_functions(fileName, method, '\t', True)
+
+
+			if args.functions:
+
+				for function in args.functions:
+
+					create_functions(fileName, function)
+
+				fileName.write("def main():\n\tpass")
+				fileName.write("\n\nif __name__ == '__main__':\n\tmain()")
+			
+			else:
+				fileName.write("def main():\n\tpass")
+				fileName.write("\n\nif __name__ == '__main__':\n\tmain()")
 		
 	fileName.close()
 
