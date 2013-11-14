@@ -3,6 +3,7 @@
 import argparse
 import os
 import sys
+import subprocess
 
 """
 Color codes:
@@ -134,6 +135,7 @@ def main():
 	parser.add_argument('-i', '--imports', nargs='+', help='modules you want to import')
 	parser.add_argument('-c', '--classes', nargs='+', help='names of classes you want to create')
 	parser.add_argument('-f', '--functions', nargs='+', help='names of functions you want to create')
+	
 	parser.add_argument('-fw', '--framework', nargs='?', help='name of python framework')
 
 	args = parser.parse_args()
@@ -265,6 +267,16 @@ def main():
 				fileName.write("\n\nif __name__ == '__main__':\n\tmain()")
 		
 	fileName.close()
+
+	# open file generated in default editor
+	try:
+		returnCode = subprocess.call('open '+args.file+'.py', shell=True)
+		if returnCode < 0:
+			print >>sys.stderr, "Child was terminated by signal", -returnCode
+		else:
+			print >>sys,stderr, "Child returned", returnCode
+	except OSError, e:
+		print >>sys.stderr, "Execution failed", e
 
 if __name__ == '__main__':
 	main()
