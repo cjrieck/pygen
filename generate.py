@@ -3,7 +3,8 @@
 import argparse
 import os
 import sys
-import subprocess
+from subprocess import Popen, PIPE, STDOUT, call
+
 
 """
 Color codes:
@@ -109,9 +110,14 @@ def install_package(package):
 		Installs packages/modules if User doesn't have it installed already
 	Return: True or False depending on if package installed or not
 	"""
-	from subprocess import Popen, PIPE, STDOUT
-	command = 'pip install '+package
-	event = Popen(command, shell=True, stdin=PIPE, stdout=PIPE, stderr=STDOUT)
+
+	if os.getuid() == 0:
+		command = 'sudo pip install '+package
+	else:
+		command = 'pip install '+package
+	
+	command = command.split(' ')
+	event = Popen(command, shell=True, stdin=PIPE, stdout=PIPE)
 	output = event.communicate()
 
 	messageString = output[0]
@@ -145,11 +151,28 @@ def main():
 	# begin implementing Framework app files generation
 	if args.framework:
 
-		if check_package(args.framework):
-			execfile(args.framework+'Generate.py')
-		else:
-			install_package(args.framework)
-			execfile(args.framework+'Generate.py')
+		if os.getuid() != 0: # check for root user
+			print WARNING+BOLD+'Warning: Not root user!'+ENDC+' Some dependencies may not install.'
+			response = raw_input(CYAN+'Continue?'+ENDC+'[y/n]: ')
+					
+			if response.lower() == 'n':
+				sys.exit()
+
+		if not check_package('pip'):
+			from subprocess import Popen, PIPE, STDOUT
+			command = 'easy_install pip'
+			event = Popen(command, shell=True, stdin=PIPE, stdout=PIPE, stderr=STDOUT)
+			output = event.communicate()
+			print output[0]
+
+		print "About to install modules"
+		install_package(args.framework)
+
+		# if check_package(args.framework):
+		# 	execfile(args.framework+'Generate.py')
+		# else:
+		# 	install_package(args.framework)
+		# 	execfile(args.framework+'Generate.py')
 
 	else:
 		if args.file:
@@ -266,7 +289,8 @@ def main():
 				fileName.write("def main():\n\tpass")
 				fileName.write("\n\nif __name__ == '__main__':\n\tmain()")
 		
-	fileName.close()
+		fileName.close()
+		print 'Successfully created the file, '+CYAN+args.file+'.py'+ENDC
 
 	# open file generated in default editor
 	try:
