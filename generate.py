@@ -3,6 +3,7 @@
 import argparse
 import os
 import sys
+import glob
 from subprocess import Popen, PIPE, STDOUT, call
 
 
@@ -177,23 +178,21 @@ def main():
 	else:
 		if args.file:
 			
-			# if os.path.exists('./'+args.file+'.py'):
+			filelist = glob.glob("./*.py")
+			newfile = args.file+".py"
+			if any(newfile in s for s in filelist): 	#checks to see if file exists in a list of files in current directory
+				print WARNING+BOLD+'Warning!'+ENDC+' About to overwrite '+BLUE+args.file+ENDC
+			 	response = raw_input(CYAN+'Would you like to continue?'+ENDC+'[y/n] ')
+			 	if response.lower() == 'n':
+			 		sys.exit()
+				else:
+					os.remove(newfile)
+	
+			 	# -----------------------------------------------------
+			else:
+			 	print 'Creating new file, '+BLUE+BOLD+newfile
 
-			# 	# Allow User to overwrite file that already exists
-			# 	# -----------------------------------------------------
-			# 	print WARNING+BOLD+'Warning!'+ENDC+' About to overwrite '+BLUE+args.file+ENDC
-			# 	response = raw_input(CYAN+'Would you like to continue?'+ENDC+'[y/n] ')
-			# 	if response.lower() == 'n':
-			# 		sys.exit()
-			# 	else:
-			# 		# os.remove(args.file+'.py')
-			# 		fileName = open(args.file+'.py', 'w')
-			# 	# -----------------------------------------------------
-			# else:
-			# 	print 'Creating new file, '+BLUE+BOLD+fileName
-			# 	fileName = open(args.file+'.py', 'w')
-
-			fileName = open(args.file+'.py', 'w')
+			fileName = open(newfile, 'w')
 
 			if args.imports:
 				
