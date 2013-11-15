@@ -10,6 +10,7 @@ Command line tool that creates a skeleton Python script of the functions, argume
 ``` console
 sudo ln -s /Path/to/Python-Boilerplate-Generator/generate.py /usr/local/bin/pygen
 ```
+Make sure you add the full path to the ``` generate.py ```` when symlinking the executable to the script
 
 * Make the pygen file an executable
 
