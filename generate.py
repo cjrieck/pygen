@@ -123,12 +123,7 @@ def install_package(package):
 
 	messageString = output[0]
 	beginMessage = messageString.find('Could')
-	# print beginMessage
 	endMessage = messageString[beginMessage:].find(package)+len(package)+beginMessage
-	# print endMessage
-	
-
-	# print output
 
 	if output[0].find("Could not find") != -1:
 		print WARNING+'Download/Install Error: '+ENDC+messageString[beginMessage:endMessage]
@@ -193,6 +188,7 @@ def main():
 			 	print 'Creating new file, '+BLUE+BOLD+newfile
 
 			fileName = open(newfile, 'w')
+			fileName.write("#!/usr/bin/env python\n\n")
 
 			if args.imports:
 				
