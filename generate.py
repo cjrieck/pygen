@@ -294,7 +294,7 @@ def main():
 
 	# open file generated in default editor
 	try:
-		returnCode = subprocess.call('open '+args.file+'.py', shell=True)
+		returnCode = call('open '+args.file+'.py', shell=True)
 		if returnCode < 0:
 			print >>sys.stderr, "Child was terminated by signal", -returnCode
 		else:
