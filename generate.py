@@ -1,11 +1,10 @@
-#!/usr/bin/env python
+		#!/usr/bin/env python
 
 import argparse
 import os
 import sys
 import glob
 from subprocess import Popen, PIPE, STDOUT, call
-
 
 """
 Color codes:
@@ -83,7 +82,8 @@ def create_functions(fileName, function, delimiter='', classMethod=False):
 			classReturnValueList = []
 			
 			for value in returnValueList:
-				value = 'self.'+value.replace(' ','')
+				# value = 'self.'+value.replace(' ','')
+				value = value.replace(' ','')
 				classReturnValueList.append(value)
 			
 			returnString = ','.join(classReturnValueList)
@@ -134,6 +134,7 @@ def install_package(package):
 def main():
 	parser = argparse.ArgumentParser()
 	parser.add_argument('file', default='pygenFile',help='name of the file you want to create')
+	parser.add_argument('-p', '--path', nargs='?', default='./', help='destination path of the file')
 	parser.add_argument('-i', '--imports', nargs='+', help='modules you want to import')
 	parser.add_argument('-c', '--classes', nargs='+', help='names of classes you want to create')
 	parser.add_argument('-f', '--functions', nargs='+', help='names of functions you want to create')
@@ -143,6 +144,7 @@ def main():
 	args = parser.parse_args()
 
 	fileName = ""
+	os.chdir(args.path)
 
 	# begin implementing Framework app files generation
 	if args.framework:
@@ -183,7 +185,6 @@ def main():
 				else:
 					os.remove(newfile)
 	
-			 	# -----------------------------------------------------
 			else:
 			 	print 'Creating new file, '+BLUE+BOLD+newfile
 
@@ -218,6 +219,7 @@ def main():
 							couldInstall = install_package(module)
 							
 							if couldInstall:
+								print 'Imported '+MODULE+module+ENDC
 								fileName.write('import '+module+'\n')
 							else:
 								print WARNING+'ERROR:'+ENDC+' Module, '+MODULE+module+ENDC+', does not exist or could not be downloaded/installed. Did not write to file'
@@ -240,6 +242,7 @@ def main():
 			if args.classes:
 
 				for className in args.classes:
+					className = className[0].upper()+className[1:] # uppercase class name
 					fileName.write('class '+className+':')
 
 					dataString = raw_input('Enter data to be stored in the class, '+BLUE+BOLD+className+ENDC+': ')
@@ -288,12 +291,13 @@ def main():
 		print 'Successfully created the file, '+CYAN+args.file+'.py'+ENDC
 
 	# open file generated in default editor
+	stderr = ""
 	try:
 		returnCode = call('open '+args.file+'.py', shell=True)
 		if returnCode < 0:
 			print >>sys.stderr, "Child was terminated by signal", -returnCode
 		else:
-			print >>sys,stderr, "Child returned", returnCode
+			print >>sys.stderr, "Child returned", returnCode
 	except OSError, e:
 		print >>sys.stderr, "Execution failed", e
 
