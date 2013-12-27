@@ -1,10 +1,14 @@
-		#!/usr/bin/env python
+#!/usr/bin/env python
 
 import argparse
 import os
 import sys
 import glob
 from subprocess import Popen, PIPE, STDOUT, call
+
+from functions import create_functions
+from inputs import check_input
+from packages import check_package, install_package
 
 """
 Color codes:
@@ -27,109 +31,7 @@ MODULE = BLUE+BOLD
 FUNCTION = GREY+BOLD
 ENDC = '\033[0m'
 
-def check_input(inputString):
-	"""
-	Arguments: String of arguments from Terminal
-	Purpose:
-		Split string into a list for easier iteration
-	Return: List of arguments as string
-	"""
-	if inputString == '':
-		inputList = []
-		
-	elif inputString.find(',') != -1:
-		inputList = inputString.split(',')
-	else:
-		inputList = inputString.split(' ')
-
-	return inputList
-
-def create_functions(fileName, function, delimiter='', classMethod=False):
-	"""
-	Arguments: file to write to, function to write, add extra delimeter if class method, boolean for class method or not
-	Purpose:
-		writes the functions/method to the file
-		will add arguments and return values to functions/methods
-	Return: N/A
-	"""
-
-	argumentString = raw_input("Enter argument(s) for "+FUNCTION+function+ENDC+': ')
-
-	argumentList = check_input(argumentString)
-
-	argumentString = ','.join(argumentList)
-	
-	if classMethod == True:
-		if argumentList == []:
-			argumentString = 'self'
-		else:
-			argumentString = 'self,'+argumentString
-
-	fileName.write('def '+function+'('+argumentString+')'+':')
-
-	returnString = raw_input("Enter return value(s) for "+FUNCTION+function+ENDC+': ')
-	
-	returnValueList = check_input(returnString)
-
-	if returnValueList == []:
-		fileName.write('\n\t'+delimiter+'pass # remove this and replace with the function body')
-	else:
-		
-		if not classMethod:
-			returnString = ','.join(returnValueList)
-			fileName.write('\n\t'+delimiter+'return '+returnString)
-		else:
-			classReturnValueList = []
-			
-			for value in returnValueList:
-				# value = 'self.'+value.replace(' ','')
-				value = value.replace(' ','')
-				classReturnValueList.append(value)
-			
-			returnString = ','.join(classReturnValueList)
-			fileName.write('\n\t'+delimiter+'return '+returnString)
-
-	fileName.write('\n\n')
-
-def check_package(package):
-	"""
-	Argument: Package to import
-	Purpose:
-		check if package can be Imported
-	Return: True or False depending on if module could be imported or not
-	"""
-	try:
-		__import__(package)
-		return True
-	except ImportError:
-		return False
-
-def install_package(package):
-	"""
-	Argument: Package to install
-	Purpose:
-		Installs packages/modules if User doesn't have it installed already
-	Return: True or False depending on if package installed or not
-	"""
-
-	if os.getuid() == 0:
-		command = 'sudo pip install '+package
-	else:
-		command = 'pip install '+package
-	
-	command = command.split(' ')
-	event = Popen(command, shell=True, stdin=PIPE, stdout=PIPE)
-	output = event.communicate()
-
-	messageString = output[0]
-	beginMessage = messageString.find('Could')
-	endMessage = messageString[beginMessage:].find(package)+len(package)+beginMessage
-
-	if output[0].find("Could not find") != -1:
-		print WARNING+'Download/Install Error: '+ENDC+messageString[beginMessage:endMessage]
-		return False
-	else:
-		return True
+# def check_input(inputString): # in classes as well
 
 def main():
 	parser = argparse.ArgumentParser()
