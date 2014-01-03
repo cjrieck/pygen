@@ -51,20 +51,10 @@ def main():
 	# begin implementing Framework app files generation
 	if args.framework:
 
-		# if os.getuid() != 0: # check for root user
-		# 	print WARNING+BOLD+'Warning: Not root user!'+ENDC+' Some dependencies may not install.'
-		# 	response = raw_input(CYAN+'Continue?'+ENDC+'[y/n]: ')
-					
-		# 	if response.lower() == 'n':
-		# 		sys.exit()
 		check_root()
 
 		if not check_pip():
-			# from subprocess import call, check_output
-			# command = ['easy_install', 'pip']
 			
-			# call(command, shell=True)
-			# check_output(command, shell=True)
 			install_pip()
 
 		print 'About to install modules'
@@ -112,14 +102,6 @@ def main():
 
 			if args.imports:
 				
-				# check for modules and install dependencies if necessary
-
-				# if os.getuid() != 0: # check for root user
-				# 	print WARNING+BOLD+'Warning: Not root user!'+ENDC+' Some dependencies may not install.'
-				# 	response = raw_input(CYAN+'Continue?'+ENDC+'[y/n]: ')
-					
-				# 	if response.lower() == 'n':
-				# 		sys.exit()
 				check_root()
 
 				for module in args.imports:
@@ -132,21 +114,7 @@ def main():
 						fileName.write('import '+module+'\n')
 
 					else:
-						# pipExists = check_package('pip')
-						# if args.path:
-						# 	currDir = args.path
-						# else:
-						# 	currDir = os.getcwd()
-
-						# os.chdir('/usr/local/bin/')
-						# packageList = os.listdir('./')
-
-						# if 'pip' in packageList:
-						# 	pipExists = True
-						# else:
-						# 	pipExists = False
-
-						# os.chdir(currDir)
+						
 						if args.path:
 							pipExists = check_pip(args.path)
 						else:
@@ -162,14 +130,6 @@ def main():
 								print WARNING+'ERROR:'+ENDC+' Module, '+MODULE+module+ENDC+', does not exist or could not be downloaded/installed. Did not write to file'
 						
 						else:
-							# install pip first
-							# from subprocess import call, check_output, STDOUT
-							# command = 'easy_install pip'
-							
-							# call(command, shell=True)
-							# err = check_output(command, 
-							# 			 stderr=STDOUT, 
-							# 			 shell=True)
 							
 							install_pip()
 
@@ -234,7 +194,6 @@ def main():
 	# open file generated in default editor
 	stderr = ""
 	try:
-		# import subprocess
 		subprocess.call('open '+args.file+'.py', shell=True)
 		returnCode = subprocess.check_output('open '+args.file+'.py', 
 											 stderr=subprocess.STDOUT, 

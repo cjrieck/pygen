@@ -10,6 +10,13 @@ WARNING = RED
 ENDC = '\033[0m'
 
 def check_root():
+	"""
+	Argument:
+	Purpose:
+		Check to see if User executed pygen as root user. 
+		Allows User to stop execution if not root
+	Return:
+	"""
 	if os.getuid() != 0: # check for root user
 		print WARNING+BOLD+'Warning: Not root user!'+ENDC+' Some dependencies may not install.'
 		response = raw_input(CYAN+'Continue?'+ENDC+'[y/n]: ')
@@ -18,6 +25,12 @@ def check_root():
 			sys.exit()
 
 def check_pip(path=None):
+	"""
+	Argument: path -> as defined by User or default value (./)
+	Purpose:
+		Checks to see if pip is installed on User's system
+	Return: True (pip is installed) or False (pip is not installed) 
+	"""
 	if path != "./":
 		currDir = path
 	else:
@@ -36,6 +49,12 @@ def check_pip(path=None):
 	return pipExists
 
 def install_pip():
+	"""
+	Argument:
+	Purpose:
+		Install pip onto User's system
+	Return:
+	"""
 	command = 'easy_install pip'
 							
 	call(command, shell=True)
@@ -54,10 +73,10 @@ def check_package(package):
 	moduleList = [mod[1] for mod in iter_modules()]
 
 	if package in moduleList:
-		# del moduleList
+		del moduleList
 		return True
 	else:
-		# del moduleList
+		del moduleList
 		return False
 
 def install_package(package):
@@ -74,10 +93,9 @@ def install_package(package):
 	err = check_output(command, 
 					   stderr=STDOUT, 
 					   shell=True)
-	# print "ERROR FROM INSTALL PACKAGE: "+err
 	
 	if err.find('Requirement already satisfied') == -1:
-		print WARNING+'Download/Install Error: '+ENDC #+messageString[beginMessage:endMessage]
+		print WARNING+'Download/Install Error: '+ENDC
 		return False
 	else:
 		return True
