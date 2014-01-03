@@ -19,3 +19,11 @@ chmod +x /usr/local/bin/pygen
 ```
 
 In the command line type ``` pygen --help ``` or ``` pygen -h``` for more info
+
+## Example Output
+
+The command: ``` pygen tester -f one two -c cube -i random ```  
+will output this:  
+![Terminal](https://raw.github.com/cjrieck/pygen/master/img/terminal.png)
+And will result in a file that looks like this:
+![Sublime Text](https://raw.github.com/cjrieck/pygen/master/img/sublime.png)
