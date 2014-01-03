@@ -18,4 +18,4 @@ Make sure you add the full path to the ``` generate.py ``` when symlinking the e
 chmod +x /usr/local/bin/pygen
 ```
 
-In the command line type ``` pygen --help ``` for more info
+In the command line type ``` pygen --help ``` or ``` pygen -h``` for more info

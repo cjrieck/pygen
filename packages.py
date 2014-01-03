@@ -1,14 +1,63 @@
+import os
+from subprocess import call, check_output, STDOUT
+from pkgutil import iter_modules
+from sys import exit
+
+RED = '\033[91m'
+CYAN = '\033[96m'
+BOLD = '\033[1m'
+WARNING = RED
+ENDC = '\033[0m'
+
+def check_root():
+	if os.getuid() != 0: # check for root user
+		print WARNING+BOLD+'Warning: Not root user!'+ENDC+' Some dependencies may not install.'
+		response = raw_input(CYAN+'Continue?'+ENDC+'[y/n]: ')
+		
+		if response.lower() == 'n':
+			sys.exit()
+
+def check_pip(path=None):
+	if path != "./":
+		currDir = path
+	else:
+		currDir = os.path.abspath(os.getcwd())
+		
+	os.chdir('/usr/local/bin/')
+	packageList = os.listdir('./')
+
+	if 'pip' in packageList:
+		pipExists = True
+	else:
+		pipExists = False
+
+	os.chdir(currDir)
+	
+	return pipExists
+
+def install_pip():
+	command = 'easy_install pip'
+							
+	call(command, shell=True)
+	err = check_output(command, 
+				 	   stderr=STDOUT, 
+				 	   shell=True)
+
 def check_package(package):
 	"""
 	Argument: Package to import
 	Purpose:
 		check if package can be Imported
-	Return: True or False depending on if module could be imported or not
+	Return: True or False depending on if module is in list of preinstalled modules
 	"""
-	try:
-		__import__(package)
+	
+	moduleList = [mod[1] for mod in iter_modules()]
+
+	if package in moduleList:
+		# del moduleList
 		return True
-	except ImportError:
+	else:
+		# del moduleList
 		return False
 
 def install_package(package):
@@ -19,21 +68,16 @@ def install_package(package):
 	Return: True or False depending on if package installed or not
 	"""
 
-	if os.getuid() == 0:
-		command = 'sudo pip install '+package
-	else:
-		command = 'pip install '+package
+	command = 'pip install ' + package
+
+	call(command, shell=True)
+	err = check_output(command, 
+					   stderr=STDOUT, 
+					   shell=True)
+	# print "ERROR FROM INSTALL PACKAGE: "+err
 	
-	command = command.split(' ')
-	event = Popen(command, shell=True, stdin=PIPE, stdout=PIPE)
-	output = event.communicate()
-
-	messageString = output[0]
-	beginMessage = messageString.find('Could')
-	endMessage = messageString[beginMessage:].find(package)+len(package)+beginMessage
-
-	if output[0].find("Could not find") != -1:
-		print WARNING+'Download/Install Error: '+ENDC+messageString[beginMessage:endMessage]
+	if err.find('Requirement already satisfied') == -1:
+		print WARNING+'Download/Install Error: '+ENDC #+messageString[beginMessage:endMessage]
 		return False
 	else:
 		return True
