@@ -1,4 +1,4 @@
-Python-Boilerplate-Generator
+pygen
 ============================
 
 Command line tool that creates a skeleton Python script of the functions, arguments and return values as specified by a User
@@ -8,7 +8,7 @@ Command line tool that creates a skeleton Python script of the functions, argume
 * Symlink the generate.py file to an executable called pygen
 
 ``` console
-sudo ln -s /Path/to/Python-Boilerplate-Generator/generate.py /usr/local/bin/pygen
+sudo ln -s /Path/to/pygen/generate.py /usr/local/bin/pygen
 ```
 Make sure you add the full path to the ``` generate.py ``` when symlinking the executable to the script
 
