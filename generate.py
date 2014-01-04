@@ -2,6 +2,7 @@
 
 import argparse
 import os
+import shutil
 import sys
 import glob
 import subprocess 
@@ -45,32 +46,48 @@ def main():
 
 		check_root()
 
-		if not check_pip():
+		if not check_pip(args.path):
 			
 			install_pip()
 
-		print 'About to install modules'
 		if install_package(args.framework):
 
 			currDir = os.path.abspath(os.getcwd())
-			os.chdir(os.path.dirname(os.path.abspath(__file__)))
+
+			filelist = glob.glob('./*')
+			newFolder = args.framework+' App'
+			if any(newFolder in s for s in filelist): 	#checks to see if file exists in a list of files in current directory
+				print WARNING+BOLD+'Warning!'+ENDC+' About to overwrite '+BLUE+args.file+ENDC
+			 	response = raw_input(CYAN+'Would you like to continue?'+ENDC+'[y/n] ')
+			 	if response.lower() == 'n':
+			 		sys.exit()
+				else:
+					shutil.rmtree(newFolder)
+
+			# go to directory where generate.py is
+			os.chdir(os.path.realpath(os.path.abspath(__file__)).replace('generate.py', '')+'/Framework_Gens')
+			
+			repo = os.getcwd()
 			
 			supported = False
-			for supportedFW in os.listdir():
+			for supportedFW in os.listdir(os.getcwd()):
 				if supportedFW.find(args.framework) != -1:
 					supported = True
 					break
 
 			os.chdir(currDir)
 
-			if supported:	
-				subprocess.call('python '+os.path.dirname(os.path.abspath(__file__))+supportedFW) # get directory of generate script
-				# pipe the current directory to the FrameWork generate file
+			if supported:
+				command = 'python ' + repo+'/'+supportedFW + ' ' +currDir + ' ' + args.file+'.py'
+				subprocess.call(command, shell=True) # get directory of generate script
+				print CYAN+BOLD+'Created application'+ENDC
 
 			else:
 				print 'Framework not supported at this time'
+				sys.exit()
 		else:
 			print 'Error installing '+args.framework
+			sys.exit()
 
 
 	else:
@@ -90,7 +107,8 @@ def main():
 			 	print 'Creating new file, '+BLUE+BOLD+newfile
 
 			fileName = open(newfile, 'w')
-			fileName.write("#!/usr/bin/env python\n\n")
+			fileName.write('# File created using pygen\n')
+			fileName.write('#!/usr/bin/env python\n\n')
 
 			if args.imports:
 				
@@ -183,19 +201,19 @@ def main():
 		fileName.close()
 		print 'Successfully created the file, '+CYAN+args.file+'.py'+ENDC
 
-	# open file generated in default editor
-	stderr = ""
-	try:
-		subprocess.call('open '+args.file+'.py', shell=True)
-		returnCode = subprocess.check_output('open '+args.file+'.py', 
-											 stderr=subprocess.STDOUT, 
-											 shell=True)
-		if returnCode < 0:
-			print >>sys.stderr, "Child was terminated by signal", -returnCode
-		else:
-			print >>sys.stderr, "Child returned", returnCode
-	except OSError, e:
-		print >>sys.stderr, "Execution failed", e
+		# open file generated in default editor
+		stderr = ""
+		try:
+			subprocess.call('open '+args.file+'.py', shell=True)
+			returnCode = subprocess.check_output('open '+args.file+'.py', 
+												 stderr=subprocess.STDOUT, 
+												 shell=True)
+			if returnCode < 0:
+				print >>sys.stderr, "Child was terminated by signal", -returnCode
+			else:
+				print >>sys.stderr, "Child returned", returnCode
+		except OSError, e:
+			print >>sys.stderr, "Execution failed", e
 
 if __name__ == '__main__':
 	main()

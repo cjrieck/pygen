@@ -4,22 +4,11 @@ import os
 import subprocess
 
 def write_flask(path, fileName):
-	"""
-	Arguments: path -> location to save app directory
-			   fileName -> name of app index
-	Purpose:
-		Write the most basic Flask applicatiion w/
-		directions on how to run
-	Return:
-	"""
 	os.chdir(path)
 	os.mkdir('Flask App')
 	os.chdir('Flask App')
 
 	flaskFile = open(fileName, 'w')
-
-	flaskFile.write('# File created using pygen\n')
-	flaskFile.write('# For more info on Flask go to http://flask.pocoo.org/\n')
 
 	flaskFile.write('from flask import Flask\n')
 	flaskFile.write('app = Flask(__name__)\n\n')
@@ -41,7 +30,7 @@ def main():
 	fileName = sys.argv[2]
 	write_flask(path, fileName)
 
-	# open directory in Finder window
+	# print os.getcwd()
 	subprocess.call('open .', shell=True)
 
 if __name__ == '__main__':
